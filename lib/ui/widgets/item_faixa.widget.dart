@@ -22,8 +22,24 @@ class ItemFaixa extends StatefulWidget {
   _CardItemFaixa createState() => _CardItemFaixa();
 }
 
-class _CardItemFaixa extends State<ItemFaixa> {
+class _CardItemFaixa extends State<ItemFaixa> with TickerProviderStateMixin {
+  late AnimationController _rotationController;
   bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,27 +62,44 @@ class _CardItemFaixa extends State<ItemFaixa> {
       elevation: 2,
       child: Column(
         children: [
-          ListTile(
+          InkWell(
             onTap: () {
               setState(() {
                 _isExpanded = !_isExpanded;
+                if (_isExpanded) {
+                  _rotationController.forward();
+                } else {
+                  _rotationController.reverse();
+                }
               });
             },
-            leading: Icon(widget.iconData, color: widget.corIcon),
-            title: Text(widget.texto),
-            trailing: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
-          ),
-          if (_isExpanded)
-            Column(
-              children: opcoes.map((opcao) {
-                return ListTile(
-                  onTap: () {
-                    print('Option Clicked: $opcao');
-                  },
-                  title: Text(opcao),
-                );
-              }).toList(),
+            child: ListTile(
+              leading: Icon(widget.iconData, color: widget.corIcon),
+              title: Text(widget.texto),
+              trailing: RotationTransition(
+                turns: Tween(
+                  begin: 0.5,
+                  end: 0.0,
+                ).animate(CurvedAnimation(
+                  parent: _rotationController,
+                  curve: Curves.easeInOut,
+                )),
+                child: const Icon(Icons.expand_less),
+              ),
             ),
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: _isExpanded ? opcoes.length * 48.0 : 0,
+            child: ListView.builder(
+              itemCount: opcoes.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(opcoes[index]),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

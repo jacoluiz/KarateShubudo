@@ -1,74 +1,42 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(
-        title: Text('Clickable Card List Example'),
-      ),
-      body: Center(
-        child: CardList(),
-      ),
-    ),
-  ));
-}
-
-class CardList extends StatelessWidget {
-  final List<CardItem> cardItems = [
-    CardItem(
-      iconData: Icons.star,
-      title: 'Card 1',
-      options: ['Option 1', 'Option 2', 'Option 3'],
-    ),
-    CardItem(
-      iconData: Icons.favorite,
-      title: 'Card 2',
-      options: ['Option A', 'Option B', 'Option C'],
-    ),
-    // Add more CardItem instances as needed
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: cardItems.length,
-      itemBuilder: (context, index) {
-        return cardItems[index];
-      },
-    );
-  }
-}
-
-class CardItem extends StatefulWidget {
+class ExpandableCard extends StatefulWidget {
   final IconData iconData;
   final String title;
   final List<String> options;
 
-  CardItem({
+  const ExpandableCard({
     required this.iconData,
     required this.title,
     required this.options,
   });
 
   @override
-  _CardItemState createState() => _CardItemState();
+  _ExpandableCardState createState() => _ExpandableCardState();
 }
 
-class _CardItemState extends State<CardItem> {
+class _ExpandableCardState extends State<ExpandableCard> with TickerProviderStateMixin {
+  late AnimationController _rotationController;
+
   bool _isExpanded = false;
 
   @override
+  void initState() {
+    super.initState();
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 400),
+    );
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<String> combinedOptions = [
-      'Always Option 1',
-      'Always Option 2',
-      ...widget.options,
-    ];
-
-    List<String> updatedOptions = List.from(combinedOptions); // Create a copy to modify
-
-    updatedOptions.removeWhere((option) => widget.options.contains(option));
-
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -76,29 +44,63 @@ class _CardItemState extends State<CardItem> {
       elevation: 2,
       child: Column(
         children: [
-          ListTile(
+          InkWell(
             onTap: () {
               setState(() {
                 _isExpanded = !_isExpanded;
+                if (_isExpanded) {
+                  _rotationController.forward();
+                } else {
+                  _rotationController.reverse();
+                }
               });
             },
-            leading: Icon(widget.iconData),
-            title: Text(widget.title),
-            trailing: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
-          ),
-          if (_isExpanded)
-            Column(
-              children: updatedOptions.map((option) {
-                return ListTile(
-                  onTap: () {
-                    print('Option Clicked: $option');
-                  },
-                  title: Text(option),
-                );
-              }).toList(),
+            child: ListTile(
+              leading: Icon(widget.iconData),
+              title: Text(widget.title),
+              trailing: RotationTransition(
+                turns: Tween(
+                  begin: 0.0,
+                  end: 0.25,
+                ).animate(CurvedAnimation(
+                  parent: _rotationController,
+                  curve: Curves.easeInOut,
+                )),
+                child: Icon(Icons.expand_less),
+              ),
             ),
+          ),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            height: _isExpanded ? widget.options.length * 48.0 : 0,
+            child: ListView.builder(
+              itemCount: widget.options.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(widget.options[index]),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text('Expandable Cards Example'),
+      ),
+      body: Center(
+        child: ExpandableCard(
+          iconData: Icons.category,
+          title: 'Options',
+          options: ['Option 1', 'Option 2', 'Option 3'],
+        ),
+      ),
+    ),
+  ));
 }

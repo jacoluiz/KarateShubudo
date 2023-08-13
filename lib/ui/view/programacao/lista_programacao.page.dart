@@ -37,13 +37,12 @@ class ListaProgramacao extends StatelessWidget {
           iconData: KarateShubudo.martial_belt,
           corIcon: Colors.purple,
           texto: "Faixa roxa",
-          sequenciaCombate: false,
+          defesaPessoal: false,
         ),
         ItemFaixa(
           iconData: KarateShubudo.martial_belt,
           corIcon: Colors.brown,
           texto: "Faixa marron",
-          sequenciaCombate: false,
         ),
       ],
     );
