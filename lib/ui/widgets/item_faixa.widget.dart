@@ -90,12 +90,13 @@ class _CardItemFaixa extends State<ItemFaixa> with TickerProviderStateMixin {
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: _isExpanded ? opcoes.length * 48.0 : 0,
+            height: _isExpanded ? opcoes.length * 55.0 : 0,
             child: ListView.builder(
               itemCount: opcoes.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(opcoes[index]),
+                  onTap: () {},
                 );
               },
             ),
