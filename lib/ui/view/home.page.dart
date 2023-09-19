@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _tabs = [
     const Center(child: Text('Avisos')),
     const Center(child: Text('Home')),
-    const ListaProgramacao(),
+    const ListaProgramacaoPage(),
   ];
 
   @override

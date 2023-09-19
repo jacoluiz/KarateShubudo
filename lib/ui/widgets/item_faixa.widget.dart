@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:karate_shubudo/ui/view/programacao/atques_de_mao.page.dart';
 
-class ItemFaixa extends StatefulWidget {
+class ItemFaixaWidget extends StatefulWidget {
   final IconData iconData;
   final Color corIcon;
   final String texto;
@@ -8,7 +9,7 @@ class ItemFaixa extends StatefulWidget {
   final bool? defesaPessoal;
   final bool? sequenciaCombate;
 
-  const ItemFaixa({
+  const ItemFaixaWidget({
     super.key,
     required this.iconData,
     required this.texto,
@@ -22,7 +23,7 @@ class ItemFaixa extends StatefulWidget {
   _CardItemFaixa createState() => _CardItemFaixa();
 }
 
-class _CardItemFaixa extends State<ItemFaixa> with TickerProviderStateMixin {
+class _CardItemFaixa extends State<ItemFaixaWidget> with TickerProviderStateMixin {
   late AnimationController _rotationController;
   bool _isExpanded = false;
 
@@ -43,7 +44,7 @@ class _CardItemFaixa extends State<ItemFaixa> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    List<String> opcoes = ['Ataque de mão', 'Chutes', 'Defesas', 'Defesas pessoais', 'Sequencia de combate', 'Katas'];
+    List<String> opcoes = ['Ataques de mão', 'Chutes', 'Defesas', 'Defesas pessoais', 'Sequencia de combate', 'Katas'];
 
     if (widget.defesa == false) {
       opcoes.removeWhere((opcao) => opcao == 'Defesas');
@@ -96,7 +97,9 @@ class _CardItemFaixa extends State<ItemFaixa> with TickerProviderStateMixin {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(opcoes[index]),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AtaqueDeMaoPage()));
+                  },
                 );
               },
             ),
